@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { ConfigProvider } from 'ant-design-vue'
+import { darkTheme } from './config/theme'
 import AppHeader from './components/layout/AppHeader.vue'
 import BottomNav from './components/layout/BottomNav.vue'
 import SceneCard from './components/game/SceneCard.vue'
 import ToolsCard, { type Tool } from './components/game/ToolsCard.vue'
 import ChatInput from './components/ui/ChatInput.vue'
 import { 
-  WrenchIcon,
-  ShieldCheckIcon,
-  SparklesIcon
-} from '@heroicons/vue/24/outline'
+  ToolOutlined,
+  SafetyCertificateOutlined,
+  ThunderboltOutlined
+} from '@ant-design/icons-vue'
 
 // 游戏状态
 const currentLocation = ref('明亮的地窖')
@@ -18,9 +20,9 @@ const activeTab = ref('story')
 const sceneDescription = ref('你踏入地窖，空气中弥漫着尘土和霉败的气息。角落里有一个生锈的铁箱，看起来已经在这里很久了。')
 
 const availableTools = ref<Tool[]>([
-  { id: 'sword', name: '钢钩', icon: WrenchIcon },
-  { id: 'shield', name: '铁链', icon: ShieldCheckIcon },
-  { id: 'magic', name: '开锁器', icon: SparklesIcon }
+  { id: 'sword', name: '钢钩', icon: ToolOutlined },
+  { id: 'shield', name: '铁链', icon: SafetyCertificateOutlined },
+  { id: 'magic', name: '开锁器', icon: ThunderboltOutlined }
 ])
 
 // 事件处理
@@ -38,31 +40,41 @@ const onSendMessage = (message: string) => {
   console.log('发送消息:', message)
   // 这里可以添加消息发送的逻辑
 }
+
+const onSceneAction = (action: string) => {
+  console.log('场景动作:', action)
+  // 这里可以添加场景动作的逻辑
+}
 </script>
 
 <template>
-  <div id="app-container">
-    <div class="mobile-container">
-      <AppHeader :current-location="currentLocation" />
-      
-      <main class="main-content">
-        <div class="content-wrapper">
-          <SceneCard :description="sceneDescription" />
-          <ToolsCard 
-            :tools="availableTools" 
-            @tool-selected="onToolSelected"
-          />
-        </div>
-      </main>
+  <ConfigProvider :theme="darkTheme">
+    <div id="app-container">
+      <div class="mobile-container">
+        <AppHeader :current-location="currentLocation" />
+        
+        <main class="main-content">
+          <div class="content-wrapper">
+            <SceneCard 
+              :description="sceneDescription" 
+              @action="onSceneAction"
+            />
+            <ToolsCard 
+              :tools="availableTools" 
+              @tool-selected="onToolSelected"
+            />
+          </div>
+        </main>
 
-      <BottomNav 
-        :active-tab="activeTab" 
-        @tab-change="onTabChange"
-      />
-      
-      <ChatInput @send-message="onSendMessage" />
+        <BottomNav 
+          :active-tab="activeTab" 
+          @tab-change="onTabChange"
+        />
+        
+        <ChatInput @send-message="onSendMessage" />
+      </div>
     </div>
-  </div>
+  </ConfigProvider>
 </template>
 
 <style scoped>

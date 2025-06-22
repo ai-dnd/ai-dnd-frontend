@@ -1,16 +1,18 @@
 <template>
-  <header class="app-header">
+  <a-layout-header class="app-header">
     <div class="header-content">
-      <div class="location-info">
-        <MapPinIcon class="location-icon" />
-        <span>当前地点: {{ currentLocation }}</span>
-      </div>
+      <a-space class="location-info" :size="8">
+        <EnvironmentOutlined class="location-icon" />
+        <a-typography-text class="location-text">
+          当前地点: {{ currentLocation }}
+        </a-typography-text>
+      </a-space>
     </div>
-  </header>
+  </a-layout-header>
 </template>
 
 <script setup lang="ts">
-import { MapPinIcon } from '@heroicons/vue/24/outline'
+import { EnvironmentOutlined } from '@ant-design/icons-vue'
 
 defineProps<{
   currentLocation: string
@@ -19,11 +21,12 @@ defineProps<{
 
 <style scoped>
 .app-header {
-  background: rgba(15, 23, 42, 0.95);
+  background: rgba(15, 23, 42, 0.95) !important;
   backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(148, 163, 184, 0.2);
-  padding: 16px 20px;
-  flex-shrink: 0;
+  padding: 16px 20px !important;
+  height: auto !important;
+  line-height: normal !important;
 }
 
 .header-content {
@@ -33,15 +36,16 @@ defineProps<{
 .location-info {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: #cbd5e1;
-  font-size: 14px;
-  font-weight: 500;
 }
 
 .location-icon {
-  width: 20px;
-  height: 20px;
   color: #60a5fa;
+  font-size: 18px;
+}
+
+.location-text {
+  color: #cbd5e1 !important;
+  font-size: 14px;
+  font-weight: 500;
 }
 </style>

@@ -1,27 +1,32 @@
 <template>
   <div class="chat-input-container">
     <div class="chat-input-wrapper">
-      <input
-        v-model="inputText"
-        type="text"
+      <a-input
+        v-model:value="inputText"
         placeholder="输入你想要做的事情..."
         class="chat-input"
-        @keyup.enter="handleSend"
+        @press-enter="handleSend"
+        size="large"
       />
-      <button 
+      <a-button 
+        type="primary"
+        shape="circle"
         class="send-button"
         @click="handleSend"
         :disabled="!inputText.trim()"
+        size="large"
       >
-        <PaperAirplaneIcon class="send-icon" />
-      </button>
+        <template #icon>
+          <SendOutlined class="send-icon" />
+        </template>
+      </a-button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { PaperAirplaneIcon } from '@heroicons/vue/24/solid'
+import { SendOutlined } from '@ant-design/icons-vue'
 
 const inputText = ref('')
 
@@ -59,53 +64,49 @@ const handleSend = () => {
 
 .chat-input {
   flex: 1;
-  padding: 12px 16px;
-  border: 1px solid rgba(148, 163, 184, 0.3);
-  border-radius: 24px;
-  font-size: 14px;
-  background: rgba(30, 41, 59, 0.8);
-  color: #e2e8f0;
-  outline: none;
-  transition: all 0.2s ease;
 }
 
-.chat-input::placeholder {
-  color: #94a3b8;
+:deep(.ant-input) {
+  border: 1px solid rgba(148, 163, 184, 0.3) !important;
+  border-radius: 24px !important;
+  font-size: 14px !important;
+  background: rgba(30, 41, 59, 0.8) !important;
+  color: #e2e8f0 !important;
+  padding: 12px 16px !important;
+  transition: all 0.2s ease !important;
 }
 
-.chat-input:focus {
-  border-color: #60a5fa;
-  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
-  background: rgba(30, 41, 59, 1);
+:deep(.ant-input::placeholder) {
+  color: #94a3b8 !important;
+}
+
+:deep(.ant-input:focus) {
+  border-color: #60a5fa !important;
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2) !important;
+  background: rgba(30, 41, 59, 1) !important;
 }
 
 .send-button {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: #3b82f6;
-  color: white;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  width: 44px !important;
+  height: 44px !important;
+  background: #3b82f6 !important;
+  border-color: #3b82f6 !important;
+  transition: all 0.2s ease !important;
 }
 
 .send-button:hover:not(:disabled) {
-  background: #2563eb;
-  transform: scale(1.05);
+  background: #2563eb !important;
+  border-color: #2563eb !important;
+  transform: scale(1.05) !important;
 }
 
 .send-button:disabled {
-  background: #475569;
-  cursor: not-allowed;
-  transform: none;
+  background: #475569 !important;
+  border-color: #475569 !important;
+  transform: none !important;
 }
 
 .send-icon {
-  width: 18px;
-  height: 18px;
+  font-size: 16px;
 }
 </style>
