@@ -44,10 +44,6 @@ const handleSend = () => {
 
 <style scoped>
 .chat-input-container {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
   background: rgba(15, 23, 42, 0.95);
   backdrop-filter: blur(20px);
   border-top: 1px solid rgba(148, 163, 184, 0.2);

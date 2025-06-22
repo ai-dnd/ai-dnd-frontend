@@ -12,32 +12,21 @@
     <div class="scene-content">
       <a-typography-paragraph class="scene-description">
         {{ description }}
-      </a-typography-paragraph>
-    </div>
+      </a-typography-paragraph>    </div>
     
     <template #actions>
       <a-button 
-        type="default" 
-        ghost 
+        v-for="action in actions"
+        :key="action.id"
+        :type="action.type || 'default'"
+        :ghost="action.ghost !== false"
         class="action-btn"
-        @click="handleAction('examine')"
+        @click="handleAction(action.id)"
       >
-        <template #icon>
-          <SearchOutlined />
+        <template #icon v-if="action.icon">
+          <component :is="action.icon" />
         </template>
-        检查环境
-      </a-button>
-      
-      <a-button 
-        type="default" 
-        ghost 
-        class="action-btn"
-        @click="handleAction('leave')"
-      >
-        <template #icon>
-          <ExportOutlined />
-        </template>
-        离开地窖
+        {{ action.text }}
       </a-button>
     </template>
   </a-card>
@@ -45,13 +34,13 @@
 
 <script setup lang="ts">
 import { 
-  MessageOutlined,
-  SearchOutlined,
-  ExportOutlined
+  MessageOutlined
 } from '@ant-design/icons-vue'
+import type { SceneAction } from '../../types/game'
 
 defineProps<{
   description: string
+  actions?: SceneAction[]
 }>()
 
 const emit = defineEmits<{
