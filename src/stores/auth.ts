@@ -3,11 +3,9 @@ import { ref, computed } from 'vue'
 import type { User, LoginCredentials, RegisterData } from '../types'
 import { authApi } from '../api'
 
-export const useAuthStore = defineStore('auth', () => {
-  // 状态
+export const useAuthStore = defineStore('auth', () => {  // 状态
   const user = ref<User | null>(null)
   const token = ref<string | null>(null)
-  const refreshToken = ref<string | null>(null)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
 
@@ -18,12 +16,10 @@ export const useAuthStore = defineStore('auth', () => {
   // 初始化，从本地存储加载token
   const initialize = () => {
     const storedToken = localStorage.getItem('auth_token')
-    const storedRefreshToken = localStorage.getItem('refresh_token')
     const storedUser = localStorage.getItem('user_data')
 
     if (storedToken) {
       token.value = storedToken
-      refreshToken.value = storedRefreshToken
       if (storedUser) {
         try {
           user.value = JSON.parse(storedUser)
@@ -39,20 +35,16 @@ export const useAuthStore = defineStore('auth', () => {
   const clearAuthData = () => {
     user.value = null
     token.value = null
-    refreshToken.value = null
     localStorage.removeItem('auth_token')
-    localStorage.removeItem('refresh_token')
     localStorage.removeItem('user_data')
   }
 
   // 保存认证数据
-  const saveAuthData = (authData: { user: User; token: string; refreshToken: string }) => {
+  const saveAuthData = (authData: { user: User; access_token: string }) => {
     user.value = authData.user
-    token.value = authData.token
-    refreshToken.value = authData.refreshToken
+    token.value = authData.access_token
     
-    localStorage.setItem('auth_token', authData.token)
-    localStorage.setItem('refresh_token', authData.refreshToken)
+    localStorage.setItem('auth_token', authData.access_token)
     localStorage.setItem('user_data', JSON.stringify(authData.user))
   }
   // 登录
@@ -112,20 +104,13 @@ export const useAuthStore = defineStore('auth', () => {
       clearAuthData()
     }
   }
-
   // 刷新token
   const refreshAuthToken = async () => {
     try {
-      if (!refreshToken.value) {
-        throw new Error('No refresh token available')
-      }
-
-      const tokens = await authApi.refreshToken(refreshToken.value)
-      token.value = tokens.token
-      refreshToken.value = tokens.refreshToken
+      const tokens = await authApi.refreshToken()
+      token.value = tokens.access_token
       
-      localStorage.setItem('auth_token', tokens.token)
-      localStorage.setItem('refresh_token', tokens.refreshToken)
+      localStorage.setItem('auth_token', tokens.access_token)
       
       return tokens
     } catch (err) {
@@ -165,12 +150,10 @@ export const useAuthStore = defineStore('auth', () => {
       return false
     }
   }
-
   return {
     // 状态
     user,
     token,
-    refreshToken,
     isLoading,
     error,
     

@@ -10,10 +10,8 @@
       <SceneCard 
         :description="gameStore.gameState.sceneDescription" 
         @action="onSceneAction"
-      />
-      <ToolsCard 
-        :tools="gameStore.availableTools" 
-        @tool-selected="onToolSelected"
+        :actions="basicActions"
+        title="场景描述"
       />
       
       <!-- 游戏历史记录 -->
@@ -36,21 +34,36 @@
 import { message } from 'ant-design-vue'
 import { useGameStore } from '../stores'
 import SceneCard from '../components/game/SceneCard.vue'
-import ToolsCard from '../components/game/ToolsCard.vue'
-import type { Tool } from '../types'
+// import ToolsCard from '../components/game/ToolsCard.vue'
+import type { SceneAction, Tool } from '../types'
+import { ExportOutlined, SearchOutlined } from '@ant-design/icons-vue'
+import { ref } from 'vue'
 
 const gameStore = useGameStore()
 
-const onToolSelected = async (tool: Tool) => {
-  try {
-    const result = await gameStore.useTool(tool)
-    message.success(`使用 ${tool.name} 成功！`)
-    console.log('工具使用结果:', result)
-  } catch (error) {
-    message.error('使用工具失败')
-    console.error('使用工具失败:', error)
+const basicActions = ref<SceneAction[]>([
+  {
+    id: 'examine',
+    text: '检查环境',
+    icon: SearchOutlined
+  },
+  {
+    id: 'leave',
+    text: '离开地窖',
+    icon: ExportOutlined
+  },{
+    id: 'attack',
+    text: '攻击',
+    icon: ExportOutlined,
+    type: 'primary'
+  },{
+    id: 'defend',
+    text: '防御',
+    icon: ExportOutlined,
+    type: 'default'
   }
-}
+])
+
 
 const onSceneAction = async (action: string) => {
   try {

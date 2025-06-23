@@ -1,5 +1,5 @@
 <template>
-  <nav class="bottom-nav">
+  <nav class="bottom-nav" :class="{ visible: isVisible }" @mouseleave="handleMouseLeave" @mouseenter="isVisible = true">
     <div class="nav-content">
       <a-segmented
         v-model:value="selectedTab"
@@ -57,6 +57,7 @@ const emit = defineEmits<{
 }>()
 
 const selectedTab = ref(props.activeTab)
+const isVisible = ref(false)
 
 watch(() => props.activeTab, (newTab) => {
   selectedTab.value = newTab
@@ -65,16 +66,23 @@ watch(() => props.activeTab, (newTab) => {
 const handleTabChange = (value: string) => {
   emit('tab-change', value)
 }
+
+const handleMouseLeave = () => {
+  isVisible.value = false
+}
 </script>
 
 <style scoped>
 .bottom-nav {
+  opacity: 0;
   position: absolute;
   bottom: 80px;
   left: 0;
   right: 0;
   padding: 0 20px;
   pointer-events: none;
+  transform: translateY(20px) scale(0.8);
+  transition: all 0.3s ease-in-out;
 }
 
 .nav-content {
@@ -92,6 +100,29 @@ const handleTabChange = (value: string) => {
   padding: 4px !important;
 }
 
+.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes bounce-in {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.8);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateY(-5px) scale(1.05);
+  }
+  70% {
+    transform: translateY(2px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
 :deep(.ant-segmented-item) {
   padding: 8px 16px !important;
   color: #94a3b8 !important;

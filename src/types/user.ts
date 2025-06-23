@@ -1,10 +1,10 @@
 // 用户相关类型定义
 export interface User {
-  id: string
+  id: number
   username: string
   email: string
   avatar?: string
-  createdAt: string
+  createdAt?: string
   lastLoginAt?: string
 }
 
@@ -20,14 +20,23 @@ export interface RegisterData {
   confirmPassword: string
 }
 
+export interface RegisterRequest {
+  username: string
+  email: string
+  password: string
+}
+
 export interface AuthResponse {
-  user: User
-  token: string
-  refreshToken: string
+  access_token: string
+  user: {
+    id: number
+    username: string
+    email: string
+  }
 }
 
 export interface UserProfile {
-  id: string
+  id: number
   username: string
   email: string
   avatar?: string

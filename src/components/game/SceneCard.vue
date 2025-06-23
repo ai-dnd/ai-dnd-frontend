@@ -4,18 +4,19 @@
       <a-space :size="12" class="scene-header">
         <MessageOutlined class="scene-icon" />
         <a-typography-title :level="4" class="scene-title">
-          场景描述
+          {{ title }}
         </a-typography-title>
       </a-space>
     </template>
-    
+
     <div class="scene-content">
       <a-typography-paragraph class="scene-description">
         {{ description }}
-      </a-typography-paragraph>    </div>
-    
-    <template #actions>
-      <a-button 
+      </a-typography-paragraph>
+    </div>
+    <a-divider />
+    <div class="scene-actions">
+      <a-button
         v-for="action in actions"
         :key="action.id"
         :type="action.type || 'default'"
@@ -28,29 +29,28 @@
         </template>
         {{ action.text }}
       </a-button>
-    </template>
+    </div>
   </a-card>
 </template>
 
 <script setup lang="ts">
-import { 
-  MessageOutlined
-} from '@ant-design/icons-vue'
-import type { SceneAction } from '../../types/game'
+import { MessageOutlined } from "@ant-design/icons-vue";
+import type { SceneAction } from "../../types/game";
 
 defineProps<{
-  description: string
-  actions?: SceneAction[]
-}>()
+  description: string;
+  actions?: SceneAction[];
+  title: string;
+}>();
 
 const emit = defineEmits<{
-  'action': [action: string]
-}>()
+  action: [action: string];
+}>();
 
 const handleAction = (action: string) => {
-  console.log('执行动作:', action)
-  emit('action', action)
-}
+  console.log("执行动作:", action);
+  emit("action", action);
+};
 </script>
 
 <style scoped>
@@ -61,6 +61,12 @@ const handleAction = (action: string) => {
   border: 1px solid rgba(148, 163, 184, 0.2) !important;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
   margin-bottom: 16px;
+}
+
+.scene-actions{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 :deep(.ant-card-head) {
@@ -111,6 +117,7 @@ const handleAction = (action: string) => {
 }
 
 .action-btn {
+  flex: 1;
   color: #e2e8f0 !important;
   background: rgba(71, 85, 105, 0.6) !important;
   border-color: rgba(148, 163, 184, 0.3) !important;
