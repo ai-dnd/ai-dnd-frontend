@@ -88,7 +88,7 @@ const rules = {
 
 const onSubmit = async () => {
   try {
-    await authStore.login(form)
+    await authStore.login(form,'bo8b695378o1nklsud353mpo')
     message.success('登录成功')
     router.push('/')
   } catch (error) {
@@ -171,5 +171,28 @@ const clearError = () => {
 
 .login-footer a:hover {
   color: #60a5fa;
+}
+
+/* Alert 组件自定义样式 */
+:deep(.ant-alert.ant-alert-error) {
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fecaca;
+}
+
+:deep(.ant-alert.ant-alert-error .ant-alert-message) {
+  color: #fecaca;
+}
+
+:deep(.ant-alert.ant-alert-error .ant-alert-icon) {
+  color: #ef4444;
+}
+
+:deep(.ant-alert.ant-alert-error .ant-alert-close-icon) {
+  color: #ef4444;
+}
+
+:deep(.ant-alert.ant-alert-error .ant-alert-close-icon:hover) {
+  color: #dc2626;
 }
 </style>
