@@ -1,6 +1,24 @@
 import { httpClient } from './client'
 import type { ChatSession } from '../types'
 
+// 发送消息的接口参数类型
+export interface SendMessageParams {
+  sessionId: string
+  role: 'user' | 'assistant'
+  content: string
+  metadata?: Record<string, any>
+}
+
+// 消息响应类型
+export interface MessageResponse {
+  id: string
+  sessionId: string
+  role: 'user' | 'assistant'
+  content: string
+  createdAt: Date
+  metadata: Record<string, any>
+}
+
 export const chatApi = {
   // 获取文档的聊天会话列表记录
   getDocumentSessions: async (documentId: string, userId: string): Promise<ChatSession[]> => {
@@ -31,6 +49,21 @@ export const chatApi = {
       return response
     } catch (error) {
       console.error('❌ 获取会话消息失败:', error)
+      throw error
+    }
+  },
+
+  // 发送消息接口
+  sendMessage: async (params: SendMessageParams): Promise<MessageResponse> => {
+    console.log('🔧 调试模式：发送消息', params)
+    
+    try {
+      const response = await httpClient.post<MessageResponse>('/chat/messages', params)
+      console.log('✅ 发送消息成功:', response)
+      
+      return response
+    } catch (error) {
+      console.error('❌ 发送消息失败:', error)
       throw error
     }
   }

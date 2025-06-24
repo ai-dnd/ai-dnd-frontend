@@ -4,19 +4,13 @@
       <!-- 移动端布局 -->
       <div v-if="showMobileLayout" class="mobile-container">
         <AppHeader :current-location="gameStore.gameState.currentLocation" />
-        
+
         <main class="main-content">
           <router-view />
         </main>
-
-        <BottomNav 
-          :active-tab="activeTab" 
-          @tab-change="onTabChange"
-        />
-        
-        <ChatInput @send-message="onSendMessage" />
+        <BottomNav :active-tab="activeTab" @tab-change="onTabChange" />
       </div>
-      
+
       <!-- 全屏布局（登录、注册页面） -->
       <div v-else class="fullscreen-container">
         <router-view />
@@ -26,47 +20,46 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
-import { useRoute } from 'vue-router'
-import { ConfigProvider } from 'ant-design-vue'
-import { darkTheme } from './config/theme'
-import AppHeader from './components/layout/AppHeader.vue'
-import BottomNav from './components/layout/BottomNav.vue'
-import ChatInput from './components/ui/ChatInput.vue'
-import { useGameStore } from './stores'
+import { ref, onMounted, watch } from "vue";
+import { useRoute } from "vue-router";
+import { ConfigProvider } from "ant-design-vue";
+import { darkTheme } from "./config/theme";
+import AppHeader from "./components/layout/AppHeader.vue";
+import BottomNav from "./components/layout/BottomNav.vue";
+import { useGameStore } from "./stores";
 
-const route = useRoute()
-const gameStore = useGameStore()
+const route = useRoute();
+const gameStore = useGameStore();
 
 // UI状态
-const activeTab = ref('story')
-const showMobileLayout = ref(true)
+const activeTab = ref("story");
+const showMobileLayout = ref(true);
 
 // 检查是否显示移动端布局
 const checkMobileLayout = () => {
   // 对于登录、注册页面，不显示移动端布局
-  showMobileLayout.value = !['login', 'register'].includes(route.name as string)
-}
+  showMobileLayout.value = !["login", "register"].includes(
+    route.name as string
+  );
+};
 
 // 事件处理
 const onTabChange = (tabId: string) => {
-  activeTab.value = tabId
-  console.log('切换到标签:', tabId)
-}
-
-const onSendMessage = (message: string) => {
-  console.log('发送消息:', message)
-  // 这里可以添加消息发送的逻辑
-}
+  activeTab.value = tabId;
+  console.log("切换到标签:", tabId);
+};
 
 // 监听路由变化
-watch(() => route.name, () => {
-  checkMobileLayout()
-})
+watch(
+  () => route.name,
+  () => {
+    checkMobileLayout();
+  }
+);
 
 onMounted(() => {
-  checkMobileLayout()
-})
+  checkMobileLayout();
+});
 </script>
 
 <style scoped>
@@ -100,11 +93,12 @@ onMounted(() => {
 }
 
 .main-content {
+  display: flex;
   flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  /* overflow-y: auto;
+  overflow-x: hidden; */
+  /* scrollbar-width: none;
+  -ms-overflow-style: none; */
 }
 
 .main-content::-webkit-scrollbar {
@@ -115,7 +109,7 @@ onMounted(() => {
   #app-container {
     padding: 0;
   }
-  
+
   .mobile-container {
     width: 100vw;
     height: 100vh;

@@ -66,6 +66,7 @@ import { useRouter } from 'vue-router'
 import { message } from 'ant-design-vue'
 import { useAuthStore } from '../stores'
 import type { LoginCredentials } from '../types'
+import { useChatStore } from '@/stores/chat'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -88,7 +89,11 @@ const rules = {
 
 const onSubmit = async () => {
   try {
-    await authStore.login(form,'bo8b695378o1nklsud353mpo')
+    const documentID = useChatStore().currentDocumentId
+    if (!documentID) {
+      return
+    }
+    await authStore.login(form,documentID)
     message.success('登录成功')
     router.push('/')
   } catch (error) {

@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { User, LoginCredentials, RegisterData, ChatSession, ChatMessage } from '../types'
 import { authApi, chatApi } from '../api'
+import { useChatStore } from './chat'
 
 export const useAuthStore = defineStore('auth', () => {  // 状态
   const user = ref<User | null>(null)
@@ -102,8 +103,9 @@ export const useAuthStore = defineStore('auth', () => {  // 状态
         console.log('🔧 登录成功，开始加载会话数据...')
         try {
           const chatSesseion = await fetchUserSessionsByDocumentId(documentId, authData.user.id.toString())
+          useChatStore().setCurrentSessionId(chatSesseion.id)
           const messages = await loadUserMessagesBySession(chatSesseion.id)
-          // chatSessions.value = [chatSesseion]
+
 
           console.log('✅ 会话数据加载完成', messages)
         } catch (sessionError) {
