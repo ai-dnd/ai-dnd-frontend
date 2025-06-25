@@ -1,5 +1,5 @@
 <template>
-  //TODO -- 1.登录时获取聊天记录 2.发送消息骨架屏
+ 
   <div class="login-view">
     <div class="login-container">      <div class="login-header">
         <h1>AI D&D</h1>
@@ -110,20 +110,22 @@ const clearError = () => {
 <style scoped>
 .login-view {
   height: 100vh;
+  width: 425px;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
   padding: 20px;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
 }
 
 .login-container {
   width: 100%;
   max-width: 400px;
-  background: rgba(15, 23, 42, 0.9);
+  background: rgba(255, 255, 255, 0.95);
   border-radius: 12px;
   padding: 32px;
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  border: 1px solid rgba(229, 231, 235, 0.8);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
 .login-header {
@@ -132,27 +134,27 @@ const clearError = () => {
 }
 
 .login-header h1 {
-  color: #f8fafc;
+  color: #1e293b;
   font-size: 32px;
   font-weight: bold;
   margin-bottom: 8px;
 }
 
 .login-header p {
-  color: #94a3b8;
+  color: #64748b;
   font-size: 16px;
 }
 
 .debug-notice {
   margin-top: 12px;
   padding: 8px 12px;
-  background: rgba(59, 130, 246, 0.1);
-  border: 1px solid rgba(59, 130, 246, 0.3);
+  background: rgba(219, 234, 254, 0.8);
+  border: 1px solid rgba(59, 130, 246, 0.4);
   border-radius: 6px;
 }
 
 .debug-notice small {
-  color: #60a5fa;
+  color: #2563eb;
   font-size: 12px;
 }
 
@@ -166,7 +168,7 @@ const clearError = () => {
 }
 
 .login-footer p {
-  color: #94a3b8;
+  color: #64748b;
   margin-bottom: 8px;
 }
 
@@ -181,13 +183,13 @@ const clearError = () => {
 
 /* Alert 组件自定义样式 */
 :deep(.ant-alert.ant-alert-error) {
-  background-color: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #fecaca;
+  background-color: rgba(254, 226, 226, 0.8);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #dc2626;
 }
 
 :deep(.ant-alert.ant-alert-error .ant-alert-message) {
-  color: #fecaca;
+  color: #dc2626;
 }
 
 :deep(.ant-alert.ant-alert-error .ant-alert-icon) {
