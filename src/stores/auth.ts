@@ -80,7 +80,7 @@ export const useAuthStore = defineStore('auth', () => {  // 状态
 
   const loadUserMessagesBySession: LoadUserMessagesBySession = async (sessionId: string) => {
     console.log('🔧 开始加载会话消息数据:', { sessionId })
-    const sessionMessages = await chatApi.getDocumentMesages(sessionId) as ChatMessage[]
+    const sessionMessages = await chatApi.getSessionMesages(sessionId) as ChatMessage[]
     console.log('📋 获取到会话消息:', sessionMessages)
     return sessionMessages
   }

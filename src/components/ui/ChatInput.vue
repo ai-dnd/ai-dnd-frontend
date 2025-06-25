@@ -39,6 +39,7 @@ const chatStore = useChatStore();
 const emit = defineEmits<{
   "send-message": [message: string];
   "message-sent": [response: any];
+  "send-error": [error: Error];
 }>();
 
 const handleSend = async () => {
@@ -48,30 +49,28 @@ const handleSend = async () => {
   inputText.value = "";
 
   try {
-    isLoading.value = true;
-
     // 先触发用户消息发送事件
     emit("send-message", messageContent);
 
     if (!chatStore.currentSessionId)
       throw new Error("当前会话ID不存在，请先创建会话");
-    // 调用API发送消息
-    const response = await chatApi.sendMessage({
-      sessionId: chatStore.currentSessionId,
-      role: "user",
-      content: messageContent,
-      metadata: {},
-    });
 
-    // 触发消息发送完成事件
+      const response = await chatStore.sendMessage({
+        sessionId: chatStore.currentSessionId,
+        role: "user",
+        content: messageContent,
+        metadata: {},
+      });
+ 
     emit("message-sent", response);
 
     message.success("消息发送成功！");
   } catch (error) {
+    const err = error instanceof Error ? error : new Error(String(error));
+    emit("send-error", err);
     console.error("发送消息失败:", error);
     message.error("发送消息失败，请重试");
   } finally {
-    isLoading.value = false;
   }
 };
 </script>

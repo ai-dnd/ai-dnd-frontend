@@ -39,7 +39,7 @@ export const chatApi = {
     }
   },
 
-  getDocumentMesages: async (sessionId: string): Promise<any[]> => {
+  getSessionMesages: async (sessionId: string): Promise<any[]> => {
     console.log('🔧 调试模式：获取会话消息列表', { sessionId })
     
     try {

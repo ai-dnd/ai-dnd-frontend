@@ -10,7 +10,7 @@
         <span>世界 (127)</span>
       </div>
     </div>
-    <div class="content-wrapper">
+    <div class="content-wrapper" ref="contentWrapperRef">
       <!-- 加载状态提示 -->
       <div v-if="gameStore.isLoading" class="loading-overlay">
         <a-spin size="large" />
@@ -18,30 +18,31 @@
       </div>
 
       <div class="autoHeight">
-        <SceneCard
-          :description="gameStore.gameState.sceneDescription"
-          @action="onSceneAction"
-          :actions="basicActions"
-          title="场景描述"
-        />
-
         <!-- AI响应区域 -->
-        <SceneCard
-          v-if="aiResponse || isWaitingResponse"
-          :description="aiResponse"
-          title="AI 响应"
-          class="ai-response-card"
-        >
-          <template v-if="isWaitingResponse">
-            <a-skeleton active :paragraph="{ rows: 3 }" />
-          </template>
-        </SceneCard>
+        <transition-group name="scene-card" tag="div" class="message-container">
+          <SceneCard
+            v-for="message in chatStore.messageLists"
+            :key="message.id"
+            :description="message.content"
+            :title="message.role === 'user' ? '你的行动' : 'AI 消息'"
+            class="history-card"
+          >
+            <template #description>
+              <div class="history-list">
+                <div class="history-item">{{ message.content }}</div>
+              </div>
+            </template>
+          </SceneCard>
+        </transition-group>
       </div>
-
     </div>
 
     <!-- 聊天输入框 -->
-    <ChatInput @send-message="onSendMessage" @message-sent="onMessageSent" />
+    <ChatInput
+      @send-message="onSendMessage"
+      @message-sent="onMessageSent"
+      @send-error=""
+    />
 
     <!-- 底部导航栏 -->
     <nav class="bottom-nav">
@@ -64,81 +65,46 @@
 <script setup lang="ts">
 import { message } from "ant-design-vue";
 import { useGameStore } from "../../stores";
+import { useChatStore } from "../../stores/chat";
 import SceneCard from "../../components/game/SceneCard.vue";
 import ChatInput from "../../components/ui/ChatInput.vue";
-// import ToolsCard from '../../components/game/ToolsCard.vue'
-import type { SceneAction } from "../../types";
-import {
-  ExportOutlined,
-  SearchOutlined,
-  EnvironmentOutlined,
-  TeamOutlined,
-} from "@ant-design/icons-vue";
-import { ref } from "vue";
+import { EnvironmentOutlined, TeamOutlined } from "@ant-design/icons-vue";
+import { ref, onMounted } from "vue";
 
 const gameStore = useGameStore();
+const chatStore = useChatStore();
 
 // AI响应相关状态
 const aiResponse = ref<string>("");
-const isWaitingResponse = ref(false);
+const isWaitingResponse = ref(true);
+const contentWrapperRef = ref<HTMLElement | null>(null);
 
-const basicActions = ref<SceneAction[]>(
-  [
-    {
-      id: "examine",
-      text: "检查环境",
-      icon: SearchOutlined,
-    },
-    {
-      id: "leave",
-      text: "离开地窖",
-      icon: ExportOutlined,
-    },
-    {
-      id: "attack",
-      text: "攻击",
-      icon: ExportOutlined,
-      type: "primary",
-    },
-    {
-      id: "defend",
-      text: "防御",
-      icon: ExportOutlined,
-      type: "default",
-    },
-  ]
-);
-
-const onSceneAction = async (action: string) => {
-  try {
-    await gameStore.executeAction({
-      id: Date.now().toString(),
-      type: "interact",
-      description: action,
-    });
-    message.success("动作执行成功！");
-  } catch (error) {
-    message.error("执行动作失败");
-  }
-};
-
-const onSendMessage = async (text: string) => {
-  isWaitingResponse.value = true;
-  aiResponse.value = "";
-  try {
-    const response = await gameStore.sendChatMessage(text);
-    aiResponse.value = response;
-  } catch (error) {
-    message.error("发送消息失败");
-  } finally {
-    isWaitingResponse.value = false;
-  }
-};
+const onSendMessage = async (text: string) => {};
 
 const onMessageSent = () => {
   // 可以在这里处理消息发送后的UI更新，例如清空AI响应
-  aiResponse.value = "";
+  contentWrapperRef.value?.scrollTo({
+    top: contentWrapperRef.value.scrollHeight,
+    behavior: "smooth",
+  });
+  console.log("✅ StoryView: 消息发送成功，滚动到最新消息");
 };
+
+// 组件挂载时初始化消息列表
+onMounted(async () => {
+  console.log("✅ StoryView: 组件挂载，开始初始化消息列表");
+  // 如果有当前会话ID，初始化消息列表
+  if (chatStore.currentSessionId) {
+    try {
+      await chatStore.initializeMessagesList(chatStore.currentSessionId);
+      console.log("✅ StoryView: 消息列表初始化完成");
+    } catch (error) {
+      console.warn("⚠️ StoryView: 消息列表初始化失败，但不影响游戏功能", error);
+    } finally {
+      isWaitingResponse.value = false;
+    }
+  }
+});
 </script>
 
 <style scoped>
@@ -182,6 +148,10 @@ const onMessageSent = () => {
   background-color: #f9fafb;
 }
 
+:deep(.ant-skeleton-paragraph li) {
+  margin-left: 0;
+}
+
 .loading-overlay {
   position: absolute;
   top: 0;
@@ -205,23 +175,48 @@ const onMessageSent = () => {
   height: auto;
 }
 
-.ai-response-card {
-  margin-top: 16px;
+.message-container {
+  position: relative;
 }
 
 .history-card {
-  margin-top: 16px;
+  margin-bottom: 16px;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
-.history-list {
-  max-height: 150px;
-  overflow-y: auto;
+/* SceneCard 动画样式 */
+.scene-card-enter-active {
+  opacity: 0;
+  transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-.history-item {
-  padding: 4px 0;
-  border-bottom: 1px solid #f0f0f0;
+.scene-card-enter-from {
+  opacity: 0;
+  transform: translateY(30px);
 }
+
+.scene-card-enter-to {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scene-card-move {
+  transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.scene-card-leave-active {
+  transition: all 0.25s ease-in;
+  position: absolute;
+  width: 100%;
+}
+
+.scene-card-leave-to {
+  opacity: 0;
+  transform: translateY(-15px);
+}
+
 
 .bottom-nav {
   height: 64px;
