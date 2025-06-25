@@ -1,4 +1,5 @@
 <template>
+  //TODO -- 1.登录时获取聊天记录 2.发送消息骨架屏
   <div class="login-view">
     <div class="login-container">      <div class="login-header">
         <h1>AI D&D</h1>

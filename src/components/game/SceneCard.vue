@@ -2,19 +2,21 @@
   <a-card class="scene-card" :bordered="false">
     <template #title>
       <a-space :size="12" class="scene-header">
-        <MessageOutlined class="scene-icon" />
-        <a-typography-title :level="4" class="scene-title">
+        <div class="scene-icon-wrapper">
+          <MessageOutlined class="scene-icon" />
+        </div>
+        <h2 class="scene-title">
           {{ title }}
-        </a-typography-title>
+        </h2>
       </a-space>
     </template>
 
     <div class="scene-content">
       <a-typography-paragraph class="scene-description">
-        {{ description }}
+        <slot name="description">{{ description }}</slot>
       </a-typography-paragraph>
     </div>
-    <a-divider />
+    <a-divider v-if="actions && actions.length > 0" />
     <div class="scene-actions">
       <a-button
         v-for="action in actions"
@@ -55,37 +57,20 @@ const handleAction = (action: string) => {
 
 <style scoped>
 .scene-card {
-  background: rgba(30, 41, 59, 0.8) !important;
-  backdrop-filter: blur(20px);
-  border-radius: 16px !important;
-  border: 1px solid rgba(148, 163, 184, 0.2) !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+  color: #2c3e50;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0px 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0px 2px 4px -2px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
   margin-bottom: 16px;
 }
 
-.scene-actions{
+.scene-actions {
+  color: #2c3e50;
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-}
-
-:deep(.ant-card-head) {
-  background: transparent !important;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.2) !important;
-  padding: 16px 20px !important;
-}
-
-:deep(.ant-card-body) {
-  padding: 20px !important;
-}
-
-:deep(.ant-card-actions) {
-  background: transparent !important;
-  border-top: 1px solid rgba(148, 163, 184, 0.2) !important;
-}
-
-:deep(.ant-card-actions > li) {
-  margin: 8px 0 !important;
 }
 
 .scene-header {
@@ -93,16 +78,25 @@ const handleAction = (action: string) => {
   align-items: center;
 }
 
+.scene-icon-wrapper {
+  background-color: #4a5568;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .scene-icon {
-  color: #60a5fa;
-  font-size: 20px;
+  color: #ffffff;
+  font-size: 16px;
 }
 
 .scene-title {
-  color: #f1f5f9 !important;
-  margin: 0 !important;
-  font-size: 18px !important;
-  font-weight: 600 !important;
+  color: #2c3e50;
+  margin-bottom: 0;
+  font-weight: 600;
 }
 
 .scene-content {
@@ -110,7 +104,7 @@ const handleAction = (action: string) => {
 }
 
 .scene-description {
-  color: #cbd5e1 !important;
+  color: #475569;
   line-height: 1.6 !important;
   font-size: 14px !important;
   margin-bottom: 0 !important;
@@ -118,15 +112,24 @@ const handleAction = (action: string) => {
 
 .action-btn {
   flex: 1;
-  color: #e2e8f0 !important;
-  background: rgba(71, 85, 105, 0.6) !important;
-  border-color: rgba(148, 163, 184, 0.3) !important;
-  font-size: 14px !important;
+  border-radius: 8px;
+  font-weight: 500;
+  height: 40px;
+}
+
+.action-btn.ant-btn-default {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #334155;
+}
+
+.action-btn.ant-btn-primary {
+  background-color: #334155;
+  color: #ffffff;
+  border: none;
 }
 
 .action-btn:hover {
-  background: rgba(100, 116, 139, 0.8) !important;
-  color: #f8fafc !important;
-  border-color: rgba(148, 163, 184, 0.5) !important;
+  opacity: 0.9;
 }
 </style>

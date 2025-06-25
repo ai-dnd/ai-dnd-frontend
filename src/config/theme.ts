@@ -1,96 +1,66 @@
-import type { ThemeConfig } from 'ant-design-vue/es/config-provider/context'
+// antd-theme.js
 
-// 暗黑主题配置，适配DND游戏风格
-export const darkTheme: ThemeConfig = {
+/**
+ * Ant Design Vue 主题配置文件
+ * 根据提供的UI设计稿定制
+ */
+const themeConfig = {
+  // 全局算法和Token配置
   token: {
-    // 主色调 - 深蓝色系
-    colorPrimary: '#3b82f6',
-    colorInfo: '#3b82f6',
-    colorSuccess: '#10b981',
-    colorWarning: '#f59e0b',
-    colorError: '#ef4444',
-    
-    // 背景色
-    colorBgContainer: '#1e293b',
-    colorBgElevated: '#334155',
-    colorBgLayout: '#0f172a',
-    
-    // 文字色
-    colorText: '#f1f5f9',
-    colorTextSecondary: '#cbd5e1',
-    colorTextTertiary: '#94a3b8',
-    colorTextQuaternary: '#64748b',
-    
-    // 边框色
-    colorBorder: '#334155',
-    colorBorderSecondary: '#475569',
-    
-    // 圆角
-    borderRadius: 8,
-    borderRadiusLG: 12,
-    borderRadiusSM: 6,
-    
-    // 字体
-    fontSize: 14,
-    fontSizeLG: 16,
-    fontSizeSM: 12,
-    
-    // 阴影 - 增强游戏氛围
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
-    boxShadowSecondary: '0 2px 4px rgba(0, 0, 0, 0.2)',
-  },
-  components: {
-    // Button 组件定制
-    Button: {
-      colorPrimary: '#3b82f6',
-      algorithm: true,
-      primaryShadow: '0 2px 8px rgba(59, 130, 246, 0.3)',
-    },
-    // Card 组件定制
-    Card: {
-      colorBgContainer: '#1e293b',
-      colorBorderSecondary: '#334155',
-    },
-    // Input 组件定制
-    Input: {
-      colorBgContainer: '#334155',
-      colorBorder: '#475569',
-      activeBorderColor: '#3b82f6',
-    },
-    // Menu 组件定制
-    Menu: {
-      colorBgContainer: '#1e293b',
-      colorItemBg: 'transparent',
-      colorItemBgHover: '#334155',
-      colorItemBgSelected: '#1e40af',
-      colorItemText: '#f1f5f9',
-      colorItemTextSelected: '#ffffff',
-    },
-  },
-}
+    // 主题色，提取自顶部的定位图标、世界图标和发送按钮
+    // 这是一个柔和、略带灰度的蓝色，显得沉稳且不刺眼
+    colorPrimary: '#5295E2',
 
-// 组件样式变量
-export const gameThemeVars = {
-  // 游戏专用颜色
-  colors: {
-    magic: '#8b5cf6',      // 魔法紫
-    danger: '#dc2626',     // 危险红
-    treasure: '#fbbf24',   // 宝藏金
-    nature: '#059669',     // 自然绿
-    shadow: '#374151',     // 阴影灰
+    // --- 基础颜色体系 ---
+
+    // 基础文字色，用于正文，使用深灰色而不是纯黑，可提升阅读舒适度
+    colorText: '#303133',
+    // 次要文字色，用于辅助性、提示性文字，如NPC对话
+    colorTextSecondary: '#606266',
+    // 禁用颜色
+    colorTextDisabled: '#C0C4CC',
+    
+    // --- 背景色体系 ---
+    
+    // 整体布局背景色，对应设计稿中页面最底层的浅灰色
+    colorBgLayout: '#F7F8FA',
+    // 组件容器背景色，如卡片、弹窗、菜单等，对应设计稿中的白色卡片
+    colorBgContainer: '#FFFFFF',
+    // 浮层容器背景色，例如 Select 下拉菜单等
+    colorBgElevated: '#FFFFFF',
+
+    // --- 边框与圆角 ---
+    
+    // 基础边框色，用于输入框、按钮等元素的边框
+    borderColor: '#E4E7ED',
+    // 基础圆角，设计稿中卡片和按钮的圆角较大，显得更柔和
+    borderRadius: 8, // 单位 px
   },
-  
-  // 渐变色
-  gradients: {
-    primary: 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)',
-    magic: 'linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%)',
-    danger: 'linear-gradient(135deg, #dc2626 0%, #ef4444 100%)',
+
+  // 针对特定组件的定制
+  components: {
+    // 卡片组件
+    Card: {
+      // 设计稿中的卡片有非常细微的阴影来营造立体感
+      boxShadow: '0 2px 12px 0 rgba(0, 0, 0, 0.05)',
+      // 卡片内边距
+      padding: 20, // 单位 px
+    },
+    // 按钮组件
+    Button: {
+      // 默认按钮（白色背景）的文字颜色，确保其与主题色一致
+      colorText: '#303133',
+      // 默认按钮的背景色，使其与页面背景色区分开
+      defaultBg: '#FFFFFF',
+      // 默认按钮的边框色
+      defaultBorderColor: '#E4E7ED'
+    },
+    // 输入框组件
+    Input: {
+      // 对应设计稿中底部输入框的背景色
+      colorBgContainer: '#F7F8FA',
+    }
   },
-  
-  // 动画时长
-  animation: {
-    fast: '0.2s',
-    normal: '0.3s',
-    slow: '0.5s',
-  },
-}
+};
+
+export default themeConfig;

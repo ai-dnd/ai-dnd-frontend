@@ -12,7 +12,30 @@ const routes = [
     path: '/',
     name: 'game',
     component: GameView,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true },
+    redirect: '/story',
+    children: [
+      {
+        path: 'story',
+        name: 'story',
+        component: () => import('../views/game/StoryView.vue')
+      },
+      {
+        path: 'world-chat',
+        name: 'world-chat',
+        component: () => import('../views/game/WorldChatView.vue')
+      },
+      {
+        path: 'character',
+        name: 'character',
+        component: () => import('../views/game/CharacterView.vue')
+      },
+      {
+        path: 'world',
+        name: 'world',
+        component: () => import('../views/game/WorldInfoView.vue')
+      }
+    ]
   },
   {
     path: '/login',

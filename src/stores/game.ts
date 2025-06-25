@@ -80,6 +80,24 @@ export const useGameStore = defineStore('game', () => {
       isLoading.value = false
     }
   }
+
+  const sendChatMessage = async (message: string): Promise<string> => {
+    try {
+      isLoading.value = true;
+      // 模拟API调用
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = `AI收到了你的消息: "${message}"。这是一个模拟的回复。`;
+      gameHistory.value.push(`[${new Date().toLocaleTimeString()}] 你: ${message}`);
+      gameHistory.value.push(`[${new Date().toLocaleTimeString()}] AI: ${response}`);
+      return response;
+    } catch (error) {
+      console.error('发送消息失败:', error);
+      throw error;
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
   // 使用工具
   const useTool = async (tool: Tool) => {
     try {
@@ -129,25 +147,17 @@ export const useGameStore = defineStore('game', () => {
       playerMana: 50
     }
     gameHistory.value = []
-    availableTools.value = [
-      { id: 'sword', name: '钢钩', icon: 'ToolOutlined' },
-      { id: 'shield', name: '铁链', icon: 'SafetyCertificateOutlined' },
-      { id: 'magic', name: '开锁器', icon: 'ThunderboltOutlined' }
-    ]
   }
 
   return {
-    // 状态
     gameState,
     availableTools,
     gameHistory,
     isLoading,
-    
-    // 方法
     updateScene,
     executeAction,
     useTool,
-    updatePlayerState,
     resetGame,
+    sendChatMessage
   }
 })
