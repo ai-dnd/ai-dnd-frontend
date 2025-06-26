@@ -29,7 +29,12 @@
           >
             <template #description>
               <div class="history-list">
-                <div class="history-item">{{ message.content }}</div>
+                <div class="history-item" v-if="message.status === 'completed'">
+                  {{ message.content }}
+                </div>
+                <div class="history-item" v-else>
+                  <a-skeleton paragraph :rows="3" />
+                </div>
               </div>
             </template>
           </SceneCard>
@@ -63,13 +68,12 @@
 </template>
 
 <script setup lang="ts">
-import { message } from "ant-design-vue";
 import { useGameStore } from "../../stores";
 import { useChatStore } from "../../stores/chat";
 import SceneCard from "../../components/game/SceneCard.vue";
 import ChatInput from "../../components/ui/ChatInput.vue";
 import { EnvironmentOutlined, TeamOutlined } from "@ant-design/icons-vue";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watchEffect, watch, nextTick } from "vue";
 
 const gameStore = useGameStore();
 const chatStore = useChatStore();
@@ -105,6 +109,21 @@ onMounted(async () => {
     }
   }
 });
+
+watch(
+  () => chatStore.messageLists.length,
+  (newMessages) => {
+    nextTick(() => {
+      if (contentWrapperRef.value) {
+        contentWrapperRef.value.scrollTo({
+          top: contentWrapperRef.value.scrollHeight,
+          behavior: "smooth",
+        });
+      }
+    });
+  },
+  { immediate: true }
+);
 </script>
 
 <style scoped>
@@ -201,22 +220,6 @@ onMounted(async () => {
   opacity: 1;
   transform: translateY(0);
 }
-
-.scene-card-move {
-  transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-.scene-card-leave-active {
-  transition: all 0.25s ease-in;
-  position: absolute;
-  width: 100%;
-}
-
-.scene-card-leave-to {
-  opacity: 0;
-  transform: translateY(-15px);
-}
-
 
 .bottom-nav {
   height: 64px;

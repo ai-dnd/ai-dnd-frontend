@@ -104,10 +104,6 @@ export const useAuthStore = defineStore('auth', () => {  // 状态
         try {
           const chatSesseion = await fetchUserSessionsByDocumentId(documentId, authData.user.id.toString())
           useChatStore().setCurrentSessionId(chatSesseion.id)
-          const messages = await loadUserMessagesBySession(chatSesseion.id)
-
-
-          console.log('✅ 会话数据加载完成', messages)
         } catch (sessionError) {
           console.warn('⚠️ 会话数据加载失败，但登录成功:', sessionError)
           // 不影响登录流程，只是警告

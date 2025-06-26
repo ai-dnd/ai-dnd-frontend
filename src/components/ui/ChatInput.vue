@@ -29,8 +29,9 @@
 import { ref } from "vue";
 import { message } from "ant-design-vue";
 import { SendOutlined } from "@ant-design/icons-vue";
-import { chatApi } from "../../api";
+import { chatApi, type SendMessageParams } from "../../api";
 import { useChatStore } from "@/stores/chat";
+import { nanoid } from "nanoid";
 
 const inputText = ref("");
 const isLoading = ref(false);
@@ -55,12 +56,16 @@ const handleSend = async () => {
     if (!chatStore.currentSessionId)
       throw new Error("当前会话ID不存在，请先创建会话");
 
-      const response = await chatStore.sendMessage({
+      const userMessage: SendMessageParams = {
         sessionId: chatStore.currentSessionId,
         role: "user",
         content: messageContent,
         metadata: {},
-      });
+        choiceIndex: -1, // 默认值，表示表示未作出选择
+        tempId: nanoid(8), // 生成一个唯一的临时ID
+      }
+
+    const response = await chatStore.sendMessage(userMessage);
  
     emit("message-sent", response);
 

@@ -7,6 +7,9 @@ export interface SendMessageParams {
   role: 'user' | 'assistant'
   content: string
   metadata?: Record<string, any>
+  tempId: string; //临时ID，用于前端临时标识生成乐观更新
+  choiceIndex?: number; // 选择的索引
+  status?: 'pending' | 'completed' | 'failed'; // 消息状态
 }
 
 // 消息响应类型
@@ -14,9 +17,12 @@ export interface MessageResponse {
   id: string
   sessionId: string
   role: 'user' | 'assistant'
-  content: string
   createdAt: Date
   metadata: Record<string, any>
+  content: string;
+  tempId: string; //临时ID，用于前端临时标识生成乐观更新
+  status: 'pending' | 'completed' | 'failed' ; // 消息状态
+  choiceIndex?: number; // 选择的索引
 }
 
 export const chatApi = {
