@@ -90,9 +90,18 @@ src/
 
 ## 📚 文档
 
+### 基础文档
 - [快速启动指南](./docs/QUICK_START.md)
 - [项目结构说明](./docs/PROJECT_STRUCTURE.md)
 - [Ant Design 集成](./docs/ANT_DESIGN_INTEGRATION.md)
+
+### 开发文档
+- [登录会话流程](./docs/LOGIN_SESSION_FLOW.md)
+- [场景卡片使用](./docs/SCENE_CARD_USAGE.md)
+- [调试模式](./docs/DEBUG_MODE.md)
+
+### 部署文档
+- [部署指南](./docs/DEPLOYMENT.md)
 
 ## 🔄 开发路线图
 
