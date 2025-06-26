@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  # 前端应用
+  frontend:
+    build: .
+    ports:
+      - "80:80"
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  # 后端应用 (假设你的Nest.js后端)
+  backend:
+    # 这里需要替换为你的后端Docker镜像
+    image: your-nestjs-backend:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://user:password@db:5432/ai_dnd
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  # 数据库 (如果需要)
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=ai_dnd
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
+    driver: bridge
