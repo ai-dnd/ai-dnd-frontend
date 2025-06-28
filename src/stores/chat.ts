@@ -1,22 +1,26 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { chatApi, type MessageResponse, type SendMessageParams } from "../api";
+import type { ChatSession, ChatMessage } from "../types";
 import { nanoid } from "nanoid";
 
 export const useChatStore = defineStore("chat", () => {
   const currentSessionId = ref<string | null>(null);
   const currentDocumentId = ref<string | null>("bo8b695378o1nklsud353mpo");
+  const chatSessions = ref<ChatSession[]>([]);
+  const isLoadingSessions = ref(false);
 
   const messageLists = ref<MessageResponse[]>([]);
 
   const sendMessage = async (message: SendMessageParams) => {
+         const AiMessagetempId = nanoid();
     try {
 
       // messageLists.value.push({message});
 
       // 创建乐观更新的消息对象
       const optimisticUserMessage: MessageResponse = {
-        id: nanoid(8), // 临时使用 tempId 作为 id
+        id: message.tempId,
         sessionId: message.sessionId,
         role: message.role,
         createdAt: new Date(),
@@ -27,14 +31,15 @@ export const useChatStore = defineStore("chat", () => {
         choiceIndex: message.choiceIndex
       };
 
+ 
       const optimisticAiMessage: MessageResponse = {
-        id: message.tempId, // 临时使用 tempId 作为 id
+        id: AiMessagetempId, // 临时使用 tempId 作为 id
         sessionId: message.sessionId,
         role: 'assistant',
         createdAt: new Date(),
         metadata: {},
         content: '', // 暂时为空，等待服务器响应
-        tempId: message.tempId,
+        tempId: AiMessagetempId,
         status: 'pending', // 标记为待处理状态
         choiceIndex: message.choiceIndex
       }
@@ -47,8 +52,8 @@ export const useChatStore = defineStore("chat", () => {
       const response = await chatApi.sendMessage(message);
       
       // 成功后，用服务器响应替换乐观更新的消息
-      const messageIndex = messageLists.value.findIndex(msg => msg.tempId === message.tempId && msg.role === 'assistant'  );
-      console.log("🔧 Chat Store: 服务器响应消息", response);
+      const messageIndex = messageLists.value.findIndex(msg => msg.tempId === AiMessagetempId && msg.role === 'assistant'  );
+      console.log("🔧 Chat Store: 服务器响应消息", response,messageIndex);
       if (messageIndex !== -1) {
         messageLists.value[messageIndex] = {
           ...response
@@ -61,15 +66,19 @@ export const useChatStore = defineStore("chat", () => {
       console.error("❌ Chat Store: 发送消息失败", error);
       
       // 失败时的处理策略
-      const messageIndex = messageLists.value.findIndex(msg => msg.tempId === message.tempId);
+      const messageIndex = messageLists.value.findIndex(msg => msg.tempId === AiMessagetempId);
       if (messageIndex !== -1) {
         // 策略1: 标记为失败状态，允许用户重试
         messageLists.value[messageIndex] = {
           ...messageLists.value[messageIndex],
           status: 'failed'
         };
+
         console.log("⚠️ Chat Store: 消息发送失败，已标记为失败状态", { tempId: message.tempId });
         
+        setTimeout(() => {
+          messageLists.value.splice(messageLists.value.length - 1, 2);
+        }, 2000); // 延时1秒，模拟用户可以看到失败状态
         // 策略2: 直接移除失败的消息（取消注释下行，注释上面的代码）
         // messageLists.value.splice(messageIndex, 1);
         // console.log("🗑️ Chat Store: 消息发送失败，已移除", { tempId: message.tempId });
@@ -82,6 +91,8 @@ export const useChatStore = defineStore("chat", () => {
     //状态
     currentSessionId,
     currentDocumentId,
+    chatSessions,
+    isLoadingSessions,
     messageLists,
 
     //方法
@@ -92,20 +103,6 @@ export const useChatStore = defineStore("chat", () => {
       currentDocumentId.value = documentId;
     },
 
-    // 初始化消息列表
-    async initializeMessagesList(sessionId: string) {
-      try {
-        console.log("🔧 Chat Store: 开始初始化消息列表", { sessionId });
-        const messages = await chatApi.getSessionMesages(sessionId);
-        messageLists.value = messages;
-        console.log("✅ Chat Store: 消息列表初始化完成", messages);
-        return messages;
-      } catch (error) {
-        console.error("❌ Chat Store: 初始化消息列表失败", error);
-        messageLists.value = [];
-        throw error;
-      }
-    },
 
     // 清空消息列表
     clearMessagesList() {
@@ -163,6 +160,47 @@ export const useChatStore = defineStore("chat", () => {
     // 获取失败的消息
     getFailedMessages() {
       return messageLists.value.filter(msg => msg.status === 'failed');
+    },
+
+    // 加载用户的聊天会话id
+    async fetchUserSessionsByDocumentId(documentId: string, userId: string) {
+      try {
+        isLoadingSessions.value = true
+        
+        console.log('🔧 Chat Store: 开始加载用户会话数据:', { documentId })
+        
+        if(currentSessionId.value) return currentSessionId
+        const sessions = await chatApi.getDocumentSessions(documentId, userId)
+        chatSessions.value = sessions
+        
+        // 提取所有会话ID
+        const sessionIds = sessions.map(session => session.id)
+        console.log('📋 Chat Store: 获取到指定document会话ID:', sessionIds)
+        currentSessionId.value = sessionIds[0]
+        return sessions[0]
+      } catch (err) {
+        console.error('❌ Chat Store: 加载会话数据失败:', err)
+        throw err
+      } finally {
+        isLoadingSessions.value = false
+      }
+    },
+
+    async getUserMessagesBySession(sessionId: string): Promise<ChatMessage[]> {
+
+      if(messageLists.value.length > 0) {
+        return messageLists.value.map(msg => ({
+          id: msg.id,
+          sessionId: msg.sessionId,
+          role: msg.role, 
+          content: msg.content,
+          createdAt: msg.createdAt.toString(),
+        }));
+      };
+
+      const sessionMessages = await chatApi.getSessionMesages(sessionId)
+      messageLists.value = sessionMessages
+      return sessionMessages
     },
   };
 });

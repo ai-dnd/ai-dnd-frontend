@@ -68,23 +68,23 @@
 </template>
 
 <script setup lang="ts">
-import { useGameStore } from "../../stores";
+import { useAuthStore, useGameStore } from "../../stores";
 import { useChatStore } from "../../stores/chat";
 import SceneCard from "../../components/game/SceneCard.vue";
 import ChatInput from "../../components/ui/ChatInput.vue";
 import { EnvironmentOutlined, TeamOutlined } from "@ant-design/icons-vue";
-import { ref, onMounted, watchEffect, watch, nextTick } from "vue";
+import { ref, onMounted, watch, nextTick, computed } from "vue";
 
 const gameStore = useGameStore();
 const chatStore = useChatStore();
+const user = useAuthStore().user;
 
 // AI响应相关状态
 const aiResponse = ref<string>("");
 const isWaitingResponse = ref(true);
 const contentWrapperRef = ref<HTMLElement | null>(null);
-
+const currentSessionId = computed(() => chatStore.currentSessionId);
 const onSendMessage = async (text: string) => {};
-
 const onMessageSent = () => {
   // 可以在这里处理消息发送后的UI更新，例如清空AI响应
   contentWrapperRef.value?.scrollTo({
@@ -97,17 +97,13 @@ const onMessageSent = () => {
 // 组件挂载时初始化消息列表
 onMounted(async () => {
   console.log("✅ StoryView: 组件挂载，开始初始化消息列表");
-  // 如果有当前会话ID，初始化消息列表
-  if (chatStore.currentSessionId) {
-    try {
-      await chatStore.initializeMessagesList(chatStore.currentSessionId);
-      console.log("✅ StoryView: 消息列表初始化完成");
-    } catch (error) {
-      console.warn("⚠️ StoryView: 消息列表初始化失败，但不影响游戏功能", error);
-    } finally {
-      isWaitingResponse.value = false;
-    }
+  if(!user?.id || !chatStore.currentDocumentId) throw new Error("用户未登录或ID不存在");
+  await chatStore.fetchUserSessionsByDocumentId(chatStore.currentDocumentId, user.id.toString());
+  if(!currentSessionId.value) {
+    throw new Error("当前会话ID不存在，请先创建会话");
   }
+  await chatStore.getUserMessagesBySession(currentSessionId.value);
+
 });
 
 watch(

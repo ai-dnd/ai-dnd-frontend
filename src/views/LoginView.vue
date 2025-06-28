@@ -2,7 +2,7 @@
  
   <div class="login-view">
     <div class="login-container">      <div class="login-header">
-        <h1>AI D&D</h1>
+        <h1>Chronicle Zero: 零号编年史</h1>
         <p>欢迎回到冒险世界</p>
         <div class="debug-notice">
           <small>🔧 调试模式：任意用户名密码都可登录</small>

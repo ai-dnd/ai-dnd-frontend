@@ -22,25 +22,30 @@ export interface ChatSession {
 - `getDocumentSessions(documentId: string)`: 获取指定文档的会话列表
 - 自动提取会话ID并在控制台输出
 
-### 3. 认证 Store (`src/stores/auth.ts`)
+### 3. 聊天 Store (`src/stores/chat.ts`)
 - 新增状态：`chatSessions`、`isLoadingSessions`
-- 新增方法：`loadUserSessions(documentId: string)`
-- 修改 `login` 方法：支持可选的 `documentId` 参数，登录成功后自动加载会话数据
+- 新增方法：`fetchUserSessionsByDocumentId(documentId: string, userId: string)`
+- 新增方法：`loadUserMessagesBySession(sessionId: string)`
+
+### 4. 认证 Store (`src/stores/auth.ts`)
+- 修改 `login` 方法：支持可选的 `documentId` 参数，登录成功后自动调用聊天 Store 的会话加载方法
 
 ## 使用方法
 
 ### 基础用法
 ```typescript
 import { useAuthStore } from '@/stores/auth'
+import { useChatStore } from '@/stores/chat'
 
 const authStore = useAuthStore()
+const chatStore = useChatStore()
 
 // 登录并加载会话数据
 await authStore.login(credentials, 'your-document-id')
 
 // 访问加载的会话数据
-console.log('会话列表:', authStore.chatSessions)
-console.log('会话ID:', authStore.chatSessions.map(s => s.id))
+console.log('会话列表:', chatStore.chatSessions)
+console.log('会话ID:', chatStore.chatSessions.map(s => s.id))
 ```
 
 ### 使用组合式函数
@@ -74,7 +79,7 @@ console.log('会话ID:', result.sessionIds)
 1. 用户调用 `login(credentials, documentId)` 方法
 2. 执行正常的登录流程
 3. 登录成功后，如果提供了 `documentId`：
-   - 自动调用 `loadUserSessions(documentId)`
+   - 自动调用聊天 Store 的 `fetchUserSessionsByDocumentId(documentId, userId)`
    - 调用 API 获取会话数据
    - 将数据保存到 `chatSessions` 状态中
    - 提取并输出所有会话ID
