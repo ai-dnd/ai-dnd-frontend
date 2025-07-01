@@ -7,7 +7,7 @@ interface RequestOptions extends RequestInit {
 
 class HttpClient {
   private baseURL: string
-  private defaultTimeout: number = 10000
+  private defaultTimeout: number = 150000
 
   constructor(baseURL: string) {
     this.baseURL = baseURL

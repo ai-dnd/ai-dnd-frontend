@@ -24,16 +24,25 @@
             v-for="message in chatStore.messageLists"
             :key="message.id"
             :description="message.content"
-            :title="message.role === 'user' ? '你的行动' : 'AI 消息'"
+            :title="message.role === 'user' ? '你的行动' : '守秘人'"
             class="history-card"
+            :actions="computeActions(message)"
+            @action-button-pressed="onActionButtonPressed"
           >
             <template #description>
               <div class="history-list">
-                <div class="history-item" v-if="message.status === 'completed'">
-                  {{ message.content }}
+                <div class="history-item" v-if="message.status === 'pending'">
+                  <a-skeleton paragraph :rows="3" />
                 </div>
                 <div class="history-item" v-else>
-                  <a-skeleton paragraph :rows="3" />
+                  <template v-if="message.status === 'completed'">
+                    <div class="history-narrative">{{ message.content }}</div>
+                  </template>
+                  <template v-else-if="message.status === 'need_react'">
+                    <span class="history-narrative"
+                      >请进行<{{ message.content }}>技能鉴定</span
+                    >
+                  </template>
                 </div>
               </div>
             </template>
@@ -74,11 +83,16 @@ import SceneCard from "../../components/game/SceneCard.vue";
 import ChatInput from "../../components/ui/ChatInput.vue";
 import { EnvironmentOutlined, TeamOutlined } from "@ant-design/icons-vue";
 import { ref, onMounted, watch, nextTick, computed } from "vue";
+import type { SceneAction } from "@/types";
+import type { MessageResponse } from "@/api";
+import { nanoid } from "nanoid";
 
 const gameStore = useGameStore();
 const chatStore = useChatStore();
 const user = useAuthStore().user;
-
+//TODO -- 添加skillCheck等相关逻辑
+//TODO -- 完善选项点击交互
+//TODO -- 添加markdown文本展示效果
 // AI响应相关状态
 const aiResponse = ref<string>("");
 const isWaitingResponse = ref(true);
@@ -94,16 +108,57 @@ const onMessageSent = () => {
   console.log("✅ StoryView: 消息发送成功，滚动到最新消息");
 };
 
+const onActionButtonPressed = (actionText: string, index: number) => {
+  console.log("✅ StoryView: 执行动作按钮", actionText, index);
+  // 在这里处理动作按钮的点击事件
+  // 可以根据不同的动作执行不同的逻辑
+  // if (actionText.startsWith("option-")) {
+  //   const optionText = actionText.replace("option-", "");
+  //   console.log("✅ StoryView: 用户选择了选项", optionText, index);
+
+  }
+
+const computeActions = (message: MessageResponse): SceneAction[] => {
+  // 根据消息内容计算可用的动作
+  const options = message.metadata?.params?.options || [];
+  console.log("✅ StoryView: 计算动作选项", options);
+  const sceneAction = [
+    ...options?.map((option: string) => ({
+      id: `option-${nanoid(2)}`,
+      text: option,
+      icon: "CheckCircleOutlined",
+      type: "default",
+      ghost: true,
+    })),
+  ];
+
+  
+  if (message.status === "need_react") {
+    sceneAction.push(...[
+      {
+        id: `option-${nanoid(2)}`,
+        text: `进行技能鉴定`,
+        icon: "CheckCircleOutlined",
+        type: "default",
+        ghost: true,
+      },
+    ]);
+  }
+  return sceneAction;
+};
 // 组件挂载时初始化消息列表
 onMounted(async () => {
   console.log("✅ StoryView: 组件挂载，开始初始化消息列表");
-  if(!user?.id || !chatStore.currentDocumentId) throw new Error("用户未登录或ID不存在");
-  await chatStore.fetchUserSessionsByDocumentId(chatStore.currentDocumentId, user.id.toString());
-  if(!currentSessionId.value) {
+  if (!user?.id || !chatStore.currentDocumentId)
+    throw new Error("用户未登录或ID不存在");
+  await chatStore.fetchUserSessionsByDocumentId(
+    chatStore.currentDocumentId,
+    user.id.toString()
+  );
+  if (!currentSessionId.value) {
     throw new Error("当前会话ID不存在，请先创建会话");
   }
   await chatStore.getUserMessagesBySession(currentSessionId.value);
-
 });
 
 watch(
@@ -199,6 +254,11 @@ watch(
   will-change: transform, opacity;
   backface-visibility: hidden;
   transform: translateZ(0);
+}
+
+.history-narrative {
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 /* SceneCard 动画样式 */

@@ -21,7 +21,7 @@ export interface MessageResponse {
   metadata: Record<string, any>
   content: string;
   tempId: string; //临时ID，用于前端临时标识生成乐观更新
-  status: 'pending' | 'completed' | 'failed' ; // 消息状态
+  status: 'pending' | 'completed' | 'failed'| 'need_react'; // 消息状态
   choiceIndex?: number; // 选择的索引
 }
 

@@ -19,12 +19,12 @@
     <a-divider v-if="actions && actions.length > 0" />
     <div class="scene-actions">
       <a-button
-        v-for="action in actions"
+        v-for="(action, index) in actions"
         :key="action.id"
         :type="action.type || 'default'"
         :ghost="action.ghost !== false"
         class="action-btn"
-        @click="handleAction(action.id)"
+        @click="handleAction(action.text, index)"
       >
         <template #icon v-if="action.icon">
           <component :is="action.icon" />
@@ -46,12 +46,12 @@ defineProps<{
 }>();
 
 const emit = defineEmits<{
-  action: [action: string];
+  actionButtonPressed: [action: string, index: number];
 }>();
 
-const handleAction = (action: string) => {
+const handleAction = (action: string, index: number) => {
   console.log("执行动作:", action);
-  emit("action", action);
+  emit("actionButtonPressed", action, index);
 };
 </script>
 
