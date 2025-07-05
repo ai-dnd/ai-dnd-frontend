@@ -21,7 +21,7 @@
         <!-- AI响应区域 -->
         <transition-group name="scene-card" tag="div" class="message-container">
           <SceneCard
-            v-for="message in chatStore.messageLists"
+            v-for="message in messageLists"
             :key="message.id"
             :description="message.content"
             :title="message.role === 'user' ? '你的行动' : '守秘人'"
@@ -32,7 +32,7 @@
             <template #description>
               <div class="history-list">
                 <div class="history-item" v-if="message.status === 'pending'">
-                  <a-skeleton paragraph :rows="3" />
+                  <a-skeleton paragraph :rows="3" active  />
                 </div>
                 <div class="history-item" v-else>
                   <template v-if="message.status === 'completed'">
@@ -84,7 +84,7 @@ import ChatInput from "../../components/ui/ChatInput.vue";
 import { EnvironmentOutlined, TeamOutlined } from "@ant-design/icons-vue";
 import { ref, onMounted, watch, nextTick, computed } from "vue";
 import type { SceneAction } from "@/types";
-import type { MessageResponse } from "@/api";
+import type { MessageResponse, SendMessageParams } from "@/api";
 import { nanoid } from "nanoid";
 
 const gameStore = useGameStore();
@@ -96,8 +96,11 @@ const user = useAuthStore().user;
 // AI响应相关状态
 const aiResponse = ref<string>("");
 const isWaitingResponse = ref(true);
+const messageLists = computed(() => chatStore.messageLists.filter(
+  (message) => message.role === "assistant" || message.choiceIndex === -1
+));
 const contentWrapperRef = ref<HTMLElement | null>(null);
-const currentSessionId = computed(() => chatStore.currentSessionId);
+const currentSessionId = computed(() => chatStore.currentSessionId)
 const onSendMessage = async (text: string) => {};
 const onMessageSent = () => {
   // 可以在这里处理消息发送后的UI更新，例如清空AI响应
@@ -108,13 +111,21 @@ const onMessageSent = () => {
   console.log("✅ StoryView: 消息发送成功，滚动到最新消息");
 };
 
-const onActionButtonPressed = (actionText: string, index: number) => {
+const onActionButtonPressed = async (actionText: string, index: number) => {
   console.log("✅ StoryView: 执行动作按钮", actionText, index);
-  // 在这里处理动作按钮的点击事件
-  // 可以根据不同的动作执行不同的逻辑
-  // if (actionText.startsWith("option-")) {
-  //   const optionText = actionText.replace("option-", "");
-  //   console.log("✅ StoryView: 用户选择了选项", optionText, index);
+  if(!currentSessionId.value) {
+    console.error("❌ StoryView: 当前会话ID不存在，请先创建会话");
+    return;
+  }
+
+  const actionMessage: SendMessageParams = {
+    tempId: nanoid(8),
+    sessionId: currentSessionId.value,
+    role: "user",
+    content: actionText,
+    choiceIndex: index,
+  }
+  chatStore.sendMessage(actionMessage)
 
   }
 

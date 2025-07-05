@@ -8,8 +8,8 @@ export const useChatStore = defineStore("chat", () => {
   // =================================================================
   //                              State
   // =================================================================
-  const currentSessionId = ref<string | null>(null);
-  const currentDocumentId = ref<string | null>("bo8b695378o1nklsud353mpo");
+  const currentSessionId = ref<string>();
+  const currentDocumentId = ref<string>("bo8b695378o1nklsud353mpo");
   const chatSessions = ref<ChatSession[]>([]);
   const isLoadingSessions = ref(false);
   const messageLists = ref<MessageResponse[]>([]);
@@ -31,11 +31,11 @@ export const useChatStore = defineStore("chat", () => {
   // =================================================================
   //                              Actions
   // =================================================================
-  const setCurrentSessionId = (sessionId: string | null) => {
+  const setCurrentSessionId = (sessionId: string) => {
     currentSessionId.value = sessionId;
   };
 
-  const setCurrentDocumentId = (documentId: string | null) => {
+  const setCurrentDocumentId = (documentId: string) => {
     currentDocumentId.value = documentId;
   };
 
