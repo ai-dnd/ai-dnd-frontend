@@ -120,7 +120,7 @@ const onSubmit = async () => {
   try {
     await authStore.register(form)
     message.success('注册成功')
-    router.push('/')
+    router.push('/story')
   } catch (error) {
     console.error('注册失败:', error)
   }

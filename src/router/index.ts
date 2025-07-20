@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores'
 
 // 路由组件
-import GameView from '../views/GameView.vue'
 import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import ProfileView from '../views/ProfileView.vue'
@@ -10,32 +9,34 @@ import ProfileView from '../views/ProfileView.vue'
 const routes = [
   {
     path: '/',
-    name: 'game',
-    component: GameView,
-    meta: { requiresAuth: true },
-    redirect: '/story',
-    children: [
-      {
-        path: 'story',
-        name: 'story',
-        component: () => import('../views/game/StoryView.vue')
-      },
-      {
-        path: 'world-chat',
-        name: 'world-chat',
-        component: () => import('../views/game/WorldChatView.vue')
-      },
-      {
-        path: 'character',
-        name: 'character',
-        component: () => import('../views/game/CharacterView.vue')
-      },
-      {
-        path: 'world',
-        name: 'world',
-        component: () => import('../views/game/WorldInfoView.vue')
-      }
-    ]
+    name: 'home',
+    // TODO: 根路由组件待定，由用户决定
+    component: LoginView, // 临时占位组件
+    meta: { requiresAuth: false }
+  },
+  {
+    path: '/story',
+    name: 'story',
+    component: () => import('../views/game/StoryView.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/world-chat',
+    name: 'world-chat',
+    component: () => import('../views/game/WorldChatView.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/character',
+    name: 'character',
+    component: () => import('../views/game/CharacterView.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/world',
+    name: 'world',
+    component: () => import('../views/game/WorldInfoView.vue'),
+    meta: { requiresAuth: true }
   },
   {
     path: '/login',
@@ -84,7 +85,7 @@ router.beforeEach(async (to, _from, next) => {
   
   // 检查是否需要游客状态（如登录、注册页面）
   if (to.meta.requiresGuest && authStore.isAuthenticated) {
-    next('/')
+    next('/story')
     return
   }
   

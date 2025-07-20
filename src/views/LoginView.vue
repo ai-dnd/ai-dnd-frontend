@@ -96,7 +96,7 @@ const onSubmit = async () => {
     }
     await authStore.login(form,documentID)
     message.success('登录成功')
-    router.push('/')
+    router.push('/story')
   } catch (error) {
     console.error('登录失败:', error)
   }
