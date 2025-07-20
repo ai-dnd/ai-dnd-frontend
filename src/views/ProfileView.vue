@@ -61,6 +61,11 @@
         </a-card>
       </div>
     </div>
+    
+    <BottomNav 
+      :active-tab="'profile'"
+      @tab-change="handleTabChange"
+    />
   </div>
 </template>
 
@@ -68,6 +73,7 @@
 import { useRouter } from 'vue-router'
 import { message, Modal } from 'ant-design-vue'
 import { useAuthStore, useGameStore } from '../stores'
+import BottomNav from '../components/layout/BottomNav.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -112,6 +118,19 @@ const handleLogout = () => {
       }
     }
   })
+}
+
+const handleTabChange = (tabId: string) => {
+  const routeMap: Record<string, string> = {
+    'home': '/',
+    'discover': '/discover',
+    'schedule': '/schedule',
+    'profile': '/profile'
+  }
+  
+  if (routeMap[tabId]) {
+    router.push(routeMap[tabId])
+  }
 }
 </script>
 

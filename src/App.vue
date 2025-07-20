@@ -18,6 +18,5 @@ import { ConfigProvider } from "ant-design-vue";
   justify-content: center;
   align-items: center;
   background: #fff;
-  padding: 20px;
 }
 </style>

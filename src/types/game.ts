@@ -1,4 +1,21 @@
 // 游戏相关类型定义
+
+// 剧本选择相关类型
+export interface Scenario {
+  id: number
+  title: string
+  description: string
+  image: string
+  tags: string[]
+  playerCount: string
+  duration: string
+  backgroundType: 'low' | 'medium' | 'high'
+  rewardDescription: string
+  storyBackground: string
+  difficulty: '简单' | '中等' | '困难'
+  socialActivity: '很少' | '适中' | '频繁'
+}
+
 export interface GameState {
   currentLocation: string
   sceneDescription: string

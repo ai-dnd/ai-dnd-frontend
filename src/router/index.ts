@@ -10,9 +10,8 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    // TODO: 根路由组件待定，由用户决定
-    component: LoginView, // 临时占位组件
-    meta: { requiresAuth: false }
+    component: () => import('../views/game/ScenarioSelectView.vue'),
+    meta: { requiresAuth: true }
   },
   {
     path: '/story',
@@ -51,6 +50,18 @@ const routes = [
     meta: { requiresGuest: true }
   },
   {
+    path: '/discover',
+    name: 'discover',
+    component: () => import('../views/DiscoverView.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/schedule',
+    name: 'schedule',
+    component: () => import('../views/ScheduleView.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/profile',
     name: 'profile',
     component: ProfileView,
@@ -85,7 +96,7 @@ router.beforeEach(async (to, _from, next) => {
   
   // 检查是否需要游客状态（如登录、注册页面）
   if (to.meta.requiresGuest && authStore.isAuthenticated) {
-    next('/story')
+    next('/')
     return
   }
   
